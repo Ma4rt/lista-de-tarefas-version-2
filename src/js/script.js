@@ -1122,8 +1122,8 @@ const CalendarManager = {
         // Depois mostra o modal
         requestAnimationFrame(() => {
             modal.style.display = 'flex';
-            modal.classList.add('show');
-            modal.setAttribute('aria-hidden', 'false');
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
             console.log('Month view modal opened successfully'); // Debug log
         });
     },
