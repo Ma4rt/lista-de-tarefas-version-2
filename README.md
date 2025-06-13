@@ -1,10 +1,10 @@
 # Lista de Tarefas - Versão 2
 
-[![Deploy to GitHub Pages](https://github.com/Ma4rt/lista-de-tarefas-vesion-2/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ma4rt/lista-de-tarefas-vesion-2/actions/workflows/deploy.yml)
-[![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=flat-square)](https://github.com/Ma4rt/lista-de-tarefas-vesion-2.git)
+[![Deploy to GitHub Pages](https://github.com/Ma4rt/lista-de-tarefas-version-2/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ma4rt/lista-de-tarefas-version-2/actions/workflows/deploy.yml)
+[![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=flat-square)](https://github.com/Ma4rt/lista-de-tarefas-version-2.git)
 
 ## 🌐 Demo
-Acesse a versão online: [Lista de Tarefas](https://github.com/Ma4rt/lista-de-tarefas-vesion-2.git)
+Acesse a versão online: [Lista de Tarefas](https://github.com/Ma4rt/lista-de-tarefas-version-2.git)
 
 ## 📋 Descrição
 Sistema de gerenciamento de tarefas com interface moderna e funcionalidades avançadas, incluindo visão mensal, temas claro/escuro, notificações e interações visuais ricas.
@@ -240,4 +240,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 📧 Contato
 Rafael Martinelli - martinelli.fix@gmail.com
 
-Link do Projeto: [https://github.com/Ma4rt/lista-de-tarefas-vesion-2](https://github.com/Ma4rt/lista-de-tarefas-vesion-2) 
+Link do Projeto: [https://github.com/Ma4rt/lista-de-tarefas-version-2](https://github.com/Ma4rt/lista-de-tarefas-version-2) 
