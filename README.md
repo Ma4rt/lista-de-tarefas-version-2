@@ -238,6 +238,6 @@ lista-de-tarefas-vesion-2/
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ## 📧 Contato
-Seu Nome - [@seu_twitter](https://twitter.com/seu_twitter) - email@exemplo.com
+Rafael Martinelli - martinelli.fix@gmail.com
 
-Link do Projeto: [https://github.com/seu-usuario/lista-de-tarefas-vesion-2](https://github.com/seu-usuario/lista-de-tarefas-vesion-2) 
+Link do Projeto: [https://github.com/Ma4rt/lista-de-tarefas-vesion-2](https://github.com/Ma4rt/lista-de-tarefas-vesion-2) 
