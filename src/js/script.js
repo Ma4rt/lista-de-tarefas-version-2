@@ -1301,6 +1301,29 @@ const ThemeManager = {
      * Toggle theme
      */
     toggleTheme() {
+        const themeToggle = document.getElementById('themeToggle');
+        const logoImg = document.querySelector('.img');
+        
+        if (themeToggle) {
+            // Adiciona a classe de rotação ao botão de tema
+            themeToggle.classList.add('rotating');
+            
+            // Remove a classe após a animação terminar
+            setTimeout(() => {
+                themeToggle.classList.remove('rotating');
+            }, 500);
+        }
+
+        if (logoImg) {
+            // Adiciona a classe de rotação à imagem do caderno
+            logoImg.classList.add('rotating');
+            
+            // Remove a classe após a animação terminar
+            setTimeout(() => {
+                logoImg.classList.remove('rotating');
+            }, 500);
+        }
+
         AppState.theme = AppState.theme === 'light' ? 'dark' : 'light';
         this.applyTheme(AppState.theme);
         Storage.saveSettings({ theme: AppState.theme });

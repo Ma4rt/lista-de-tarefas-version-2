@@ -110,6 +110,11 @@ body {
 
 .header h1 i {
     color: var(--primary-color);
+    transition: transform 0.5s ease;
+}
+
+.header h1:hover i {
+    animation: rotate360 0.5s ease;
 }
 
 .header-controls {
@@ -139,6 +144,24 @@ body {
     background: var(--bg-accent);
     color: var(--primary-color);
     transform: translateY(-1px);
+}
+
+/* Animação de rotação para o ícone do tema */
+.theme-toggle i {
+    transition: transform 0.5s ease;
+}
+
+.theme-toggle.rotating i {
+    animation: rotate360 0.5s ease;
+}
+
+@keyframes rotate360 {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Main Content */
@@ -240,20 +263,25 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .section-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
 .section-header h2 i {
     color: var(--primary-color);
+    transition: transform 0.5s ease;
+}
+
+.section-header h2:hover i {
+    animation: rotate360 0.5s ease;
 }
 
 .task-counter {
@@ -413,6 +441,7 @@ body {
     font-size: 0.875rem;
     color: var(--text-muted);
 }
+
 
 .task-actions button:hover {
     background: var(--bg-accent);
@@ -867,14 +896,15 @@ body {
 }
 
 .btn-outline {
-    background: transparent;
-    color: var(--text-secondary);
-    border: 1px solid var(--primary-dark);
+    background-color: var(--primary-color);
+    color: var(--text-primary);
+    border: 2px solid var(--primary-color);
 }
 
 .btn-outline:hover:not(:disabled) {
-    background: var(--primary-dark);
-    color: var(--text-primary);
+    background-color: #7ad8d8;
+    border-color: #7ad8d8;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .btn-icon {
@@ -976,7 +1006,7 @@ body {
 }
 
 .modal-close:hover {
-    color: var(--text-primary);
+    color: #ef4444;
     background: var(--bg-accent);
 }
 
@@ -1385,7 +1415,7 @@ body {
 #monthViewBtn:hover {
     background-color: #7ad8d8;
     border-color: #7ad8d8;
-    color: #000000;
+    color: #7cf5f5;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(147, 243, 243, 0.3);
 }
@@ -1425,14 +1455,29 @@ h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover,
 }
 
 /* Efeito de brilho para ícones */
-.fas, .far, .fab {
+.img {
     transition: all 0.3s ease;
+    width: 100px;
 }
 
-.fas:hover, .far:hover, .fab:hover {
+.img:hover {
     color: #93f3f3;
     text-shadow: 0 0 10px rgba(147, 243, 243, 0.5);
     transform: scale(1.1);
+}
+
+/* Animação de rotação para a imagem do caderno */
+.img.rotating {
+    animation: rotate360 0.5s ease;
+}
+
+@keyframes rotate360 {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Efeito de hover para botões */
@@ -1478,4 +1523,22 @@ input[type="checkbox"]:hover {
 ::-webkit-scrollbar-thumb:hover {
     background-color: #93f3f3;
     box-shadow: 0 0 10px rgba(147, 243, 243, 0.3);
+}
+
+/* Calendar Controls */
+.calendar-controls button i {
+    transition: transform 0.5s ease;
+}
+
+.calendar-controls button:hover i {
+    animation: rotate360 0.5s ease;
+}
+
+/* Month Calendar Controls */
+.month-calendar-controls button i {
+    transition: transform 0.5s ease;
+}
+
+.month-calendar-controls button:hover i {
+    animation: rotate360 0.5s ease;
 }
