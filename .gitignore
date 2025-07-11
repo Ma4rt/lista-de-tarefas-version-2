@@ -1,0 +1,21 @@
+# Node.js
+node_modules/
+.env
+.env.*
+*.sqlite
+*.log
+
+# Vercel/Deploy
+.vercel/
+dist/
+build/
+
+# Editor/IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Outros
+*.bak
+*.tmp
