@@ -941,8 +941,7 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
+    /* Removido: opacity: 0; visibility: hidden; */
     transition: opacity var(--transition-normal), visibility var(--transition-normal);
     padding: 1rem;
 }
@@ -964,8 +963,7 @@ body {
     max-width: 400px;
     margin: 2rem auto;
     position: relative;
-    transform: translateY(-20px);
-    opacity: 0;
+    /* Removido: transform: translateY(-20px); opacity: 0; */
     transition: transform var(--transition-normal), opacity var(--transition-normal);
 }
 
@@ -1541,4 +1539,149 @@ input[type="checkbox"]:hover {
 
 .month-calendar-controls button:hover i {
     animation: rotate360 0.5s ease;
+}
+
+/* Tela de Login */
+#loginScreen {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+.login-container {
+    background: var(--bg-secondary);
+    padding: 2.5rem 2rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    min-width: 320px;
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.login-container h2 {
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    font-size: 2rem;
+    font-weight: 700;
+}
+#loginScreen .form-group {
+    width: 100%;
+}
+#loginScreen .form-actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+#loginScreen .auth-switch {
+    margin-top: 1rem;
+    text-align: center;
+    width: 100%;
+}
+
+/* Cabeçalho da tela de login fixo no topo */
+.login-header {
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    z-index: 1200;
+    padding: 0.5rem 0;
+}
+.login-header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-left: 2rem;
+}
+.login-logo {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+    transition: transform 0.5s, filter 0.3s;
+    cursor: pointer;
+}
+.login-logo:hover {
+    transform: rotate(360deg) scale(1.08);
+    filter: drop-shadow(0 0 8px var(--primary-color)) brightness(1.2);
+}
+.login-title {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 0;
+}
+
+/* Centralizar o formulário abaixo do header */
+#loginScreen {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+#loginScreen .login-container {
+    margin-top: 6.5rem;
+    margin-bottom: 4.5rem;
+}
+
+/* Rodapé permanece igual */
+.login-footer {
+    width: 100vw;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: 0.7rem 0;
+    display: flex;
+    justify-content: center;
+    z-index: 1100;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+}
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+.footer-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.footer-content a:hover {
+    color: var(--secondary-color);
+}
+.footer-socials {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.footer-socials i {
+    font-size: 1.4rem;
+    vertical-align: middle;
 }

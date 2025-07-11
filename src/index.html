@@ -10,18 +10,17 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1><img src="Caderno.png" alt="Caderno" class="img"> Lista de Tarefas</h1>
-            <div class="header-controls">
-                <button id="themeToggle" class="theme-toggle" aria-label="Alternar tema">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </header>
-
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1><img src="Caderno.png" alt="Caderno" class="img"> Lista de Tarefas</h1>
+                <div class="header-controls">
+                    <button id="themeToggle" class="theme-toggle" aria-label="Alternar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </header>
             <!-- Task Form -->
             <section class="task-form-section">
                 <form id="taskForm" class="task-form">
@@ -206,7 +205,122 @@
     <!-- Toast Notifications -->
     <div id="toastContainer" class="toast-container"></div>
 
+    <section id="loginScreen" style="display:none;">
+        <header class="login-header">
+            <div class="login-header-content">
+                <img src="Caderno.png" alt="Caderno" class="login-logo">
+                <h1 class="login-title">Lista de Tarefas</h1>
+            </div>
+        </header>
+        <div class="login-container">
+            <h2>Entrar</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required />
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" required />
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </div>
+                <p class="auth-switch">Não tem conta? <a href="#" onclick="switchAuthModal('register')">Cadastre-se</a></p>
+            </form>
+        </div>
+        <footer class="login-footer">
+            <div class="footer-content">
+                <span>Contato: <a href="mailto:martinelli.fix@gmail.com">martinelli.fix@gmail.com</a></span>
+                <span class="footer-socials">
+                    <a href="https://github.com/Ma4rt/lista-de-tarefas-vesion-2" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/rafael-martinelli/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                </span>
+            </div>
+        </footer>
+    </section>
+    <!-- Modal de Cadastro -->
+    <div id="registerModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Criar Conta</h3>
+                <button class="modal-close" onclick="toggleAuthModal('register', false)"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Nome</label>
+                    <input type="text" id="registerName" required maxlength="60" autocomplete="name" />
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required autocomplete="email" />
+                    <button type="button" id="sendVerificationCode" class="btn btn-secondary" style="margin-top:0.5rem;">Enviar código de verificação</button>
+                    <small id="emailFeedback" style="color:var(--primary-color);"></small>
+                </div>
+                <div class="form-group">
+                    <label for="registerCode">Código de Verificação</label>
+                    <input type="text" id="registerCode" maxlength="6" pattern="[0-9]{6}" required autocomplete="one-time-code" />
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Senha</label>
+                    <input type="password" id="registerPassword" required minlength="8" autocomplete="new-password" />
+                    <small>Mínimo 8 caracteres, use letras, números e símbolos.</small>
+                </div>
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirmar Senha</label>
+                    <input type="password" id="registerPasswordConfirm" required minlength="8" autocomplete="new-password" />
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+                <div id="registerFeedback" style="margin-top:0.5rem;color:var(--error-color);"></div>
+                <p class="auth-switch">Já tem conta? <a href="#" onclick="switchAuthModal('login')">Entrar</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Compartilhar Tarefa -->
+    <div id="shareTaskModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Compartilhar Tarefa</h3>
+                <button class="modal-close" onclick="toggleShareModal(false)"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="shareTaskForm">
+                <div class="form-group">
+                    <label for="shareEmail">Email do usuário para compartilhar</label>
+                    <input type="email" id="shareEmail" required />
+                </div>
+                <input type="hidden" id="shareTaskId" />
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Compartilhar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal Tarefas Compartilhadas Recebidas -->
+    <div id="receivedSharesModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tarefas Compartilhadas com Você</h3>
+                <button class="modal-close" onclick="toggleReceivedSharesModal(false)"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="receivedSharesList"></div>
+        </div>
+    </div>
+    <!-- Modal Tarefas Compartilhadas Enviadas -->
+    <div id="sentSharesModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tarefas que Você Compartilhou</h3>
+                <button class="modal-close" onclick="toggleSentSharesModal(false)"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="sentSharesList"></div>
+        </div>
+    </div>
+
     <script src="js/check_notifications.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

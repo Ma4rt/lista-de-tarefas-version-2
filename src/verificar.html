@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificação de E-mail</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    #mensagem { background: #fff; padding: 2rem 3rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <div id="mensagem">Verificando...</div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      fetch('https://lista-de-tarefas-version-2-backend.vercel.app/api/auth/verify?token=' + token)
+        .then(res => res.json())
+        .then(data => {
+          if (data.message) {
+            document.getElementById('mensagem').innerText = data.message;
+          } else {
+            document.getElementById('mensagem').innerText = data.error || 'Erro ao verificar.';
+          }
+        })
+        .catch(() => {
+          document.getElementById('mensagem').innerText = 'Erro ao conectar ao servidor.';
+        });
+    } else {
+      document.getElementById('mensagem').innerText = 'Token não encontrado na URL.';
+    }
+  </script>
+</body>
+</html> 

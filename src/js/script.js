@@ -219,6 +219,98 @@ const Storage = {
     }
 };
 
+// --- INTEGRAÇÃO COM BACKEND ---
+const API_URL = 'http://localhost:3001/api/tasks';
+
+const BackendTasks = {
+    async fetchTasks() {
+        const token = localStorage.getItem('token');
+        const res = await fetch(API_URL, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Erro ao buscar tarefas');
+        return await res.json();
+    },
+    async createTask(task) {
+        const token = localStorage.getItem('token');
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({
+                title: task.title,
+                description: task.description,
+                due_date: task.date.toISOString().slice(0, 16) // yyyy-mm-ddThh:mm
+            })
+        });
+        if (!res.ok) throw new Error('Erro ao criar tarefa');
+        return await res.json();
+    },
+    async updateTask(taskId, task) {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/${taskId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({
+                title: task.title,
+                description: task.description,
+                due_date: task.date.toISOString().slice(0, 16),
+                status: task.status || 'pendente'
+            })
+        });
+        if (!res.ok) throw new Error('Erro ao atualizar tarefa');
+        return await res.json();
+    },
+    async deleteTask(taskId) {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/${taskId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Erro ao excluir tarefa');
+        return await res.json();
+    }
+};
+
+// --- COMPARTILHAMENTO DE TAREFAS ---
+const ShareAPI = {
+    async shareTask(taskId, to_email) {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/${taskId}/share`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ to_email })
+        });
+        if (!res.ok) throw new Error('Erro ao compartilhar tarefa');
+        return await res.json();
+    },
+    async getReceivedShares() {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/shared/received`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Erro ao buscar tarefas compartilhadas recebidas');
+        return await res.json();
+    },
+    async getSentShares() {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/shared/sent`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Erro ao buscar tarefas compartilhadas enviadas');
+        return await res.json();
+    },
+    async respondShare(share_id, response) {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/shared/${share_id}/respond`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ response })
+        });
+        if (!res.ok) throw new Error('Erro ao responder compartilhamento');
+        return await res.json();
+    }
+};
+
 // Task Manager
 const TaskManager = {
     /**
@@ -234,8 +326,21 @@ const TaskManager = {
     /**
      * Load tasks from storage
      */
-    loadTasks() {
-        AppState.tasks = Storage.loadTasks();
+    async loadTasks() {
+        try {
+            AppState.tasks = (await BackendTasks.fetchTasks()).map(task => ({
+                id: task.id,
+                title: task.title,
+                description: task.description,
+                date: new Date(task.due_date),
+                status: task.status,
+                createdAt: new Date(task.created_at),
+                updatedAt: task.updated_at ? new Date(task.updated_at) : null
+            }));
+        } catch (e) {
+            AppState.tasks = [];
+            alert('Erro ao carregar tarefas do servidor.');
+        }
     },
 
     /**
@@ -323,29 +428,19 @@ const TaskManager = {
      * Add new task
      * @param {Object} taskData - Task data
      */
-    addTask(taskData) {
-        const task = {
-            id: Utils.generateUniqueId(),
-            title: taskData.title,
-            description: taskData.description || '',
-            date: taskData.date,
-            completed: false,
-            reminder: null,
-            createdAt: new Date(),
-            updatedAt: null
-        };
-
-        AppState.tasks.unshift(task);
-        Storage.saveTasks(AppState.tasks);
-        this.updateTaskList();
-        CalendarManager.updateCalendar();
-
-        if (window.notificationManager) {
-            window.notificationManager.showToast('success', 'Tarefa criada!', 'Nova tarefa adicionada com sucesso.');
+    async addTask(taskData) {
+        try {
+            const task = await BackendTasks.createTask(taskData);
+            await this.loadTasks();
+            this.updateTaskList();
+            CalendarManager.updateCalendar();
+            if (window.notificationManager) {
+                window.notificationManager.showToast('success', 'Tarefa criada!', 'Nova tarefa adicionada com sucesso.');
+            }
+            this.showReminderModal(task);
+        } catch (e) {
+            alert('Erro ao criar tarefa.');
         }
-
-        // Show reminder modal for new tasks
-        this.showReminderModal(task);
     },
 
     /**
@@ -353,32 +448,17 @@ const TaskManager = {
      * @param {string} taskId - Task ID
      * @param {Object} taskData - Updated task data
      */
-    updateTask(taskId, taskData) {
-        const taskIndex = AppState.tasks.findIndex(task => task.id === taskId);
-        if (taskIndex === -1) return;
-
-        const task = AppState.tasks[taskIndex];
-        
-        // Clear existing reminder if date changed
-        if (task.date.getTime() !== taskData.date.getTime() && task.reminder) {
-            this.clearTaskReminder(task);
-        }
-
-        // Update task
-        AppState.tasks[taskIndex] = {
-            ...task,
-            title: taskData.title,
-            description: taskData.description || '',
-            date: taskData.date,
-            updatedAt: new Date()
-        };
-
-        Storage.saveTasks(AppState.tasks);
-        this.updateTaskList();
-        CalendarManager.updateCalendar();
-
-        if (window.notificationManager) {
-            window.notificationManager.showToast('success', 'Tarefa atualizada!', 'Tarefa modificada com sucesso.');
+    async updateTask(taskId, taskData) {
+        try {
+            await BackendTasks.updateTask(taskId, taskData);
+            await this.loadTasks();
+            this.updateTaskList();
+            CalendarManager.updateCalendar();
+            if (window.notificationManager) {
+                window.notificationManager.showToast('success', 'Tarefa atualizada!', 'Tarefa modificada com sucesso.');
+            }
+        } catch (e) {
+            alert('Erro ao atualizar tarefa.');
         }
     },
 
@@ -476,25 +556,17 @@ const TaskManager = {
      * Remove task
      * @param {string} taskId - Task ID
      */
-    removeTask(taskId) {
-        const task = AppState.tasks.find(t => t.id === taskId);
-        if (!task) return;
-
-        const confirmed = confirm(`Tem certeza que deseja excluir esta tarefa?\n\n"${Utils.summarizeText(task.text, 50)}"`);
-        if (!confirmed) return;
-
-        // Clear reminder
-        if (task.reminder) {
-            this.clearTaskReminder(task);
-        }
-
-        AppState.tasks = AppState.tasks.filter(t => t.id !== taskId);
-        Storage.saveTasks(AppState.tasks);
-        this.updateTaskList();
-        CalendarManager.updateCalendar();
-
-        if (window.notificationManager) {
-            window.notificationManager.showToast('info', 'Tarefa removida!', 'Tarefa excluída com sucesso.');
+    async removeTask(taskId) {
+        try {
+            await BackendTasks.deleteTask(taskId);
+            await this.loadTasks();
+            this.updateTaskList();
+            CalendarManager.updateCalendar();
+            if (window.notificationManager) {
+                window.notificationManager.showToast('success', 'Tarefa excluída!', 'Tarefa removida com sucesso.');
+            }
+        } catch (e) {
+            alert('Erro ao excluir tarefa.');
         }
     },
 
@@ -1347,38 +1419,50 @@ const ThemeManager = {
 };
 
 // Application initialization
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize all managers
+window.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    const loginScreen = document.getElementById('loginScreen');
+    const mainContent = document.querySelector('.main-content');
+    if (!token) {
+        if (mainContent) mainContent.style.display = 'none';
+        if (loginScreen) loginScreen.style.display = 'flex';
+        return;
+    } else {
+        if (mainContent) mainContent.style.display = '';
+        if (loginScreen) loginScreen.style.display = 'none';
+        if (TaskManager && typeof TaskManager.init === 'function') {
+            TaskManager.init();
+        }
+    }
     ThemeManager.init();
-    TaskManager.init();
     CalendarManager.init();
-
-    // Set default date and time for new tasks
-    const taskDate = document.getElementById('taskDate');
-    const taskTime = document.getElementById('taskTime');
-    
-    if (taskDate) {
-        taskDate.value = new Date().toISOString().split('T')[0];
+    // Botões globais de compartilhamento
+    const header = document.querySelector('.header-controls');
+    if (header) {
+        const btnReceived = document.createElement('button');
+        btnReceived.textContent = 'Tarefas Compartilhadas';
+        btnReceived.className = 'btn btn-outline';
+        btnReceived.onclick = () => toggleReceivedSharesModal(true);
+        header.appendChild(btnReceived);
+        const btnSent = document.createElement('button');
+        btnSent.textContent = 'Tarefas que Compartilhei';
+        btnSent.className = 'btn btn-outline';
+        btnSent.onclick = () => toggleSentSharesModal(true);
+        header.appendChild(btnSent);
     }
-    
-    if (taskTime) {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(Math.ceil(now.getMinutes() / 15) * 15).padStart(2, '0');
-        taskTime.value = `${hours}:${minutes}`;
-    }
-
-    // Show loading spinner briefly for smooth initialization
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    if (loadingSpinner) {
-        loadingSpinner.style.display = 'flex';
-        setTimeout(() => {
-            loadingSpinner.style.display = 'none';
-        }, 500);
-    }
-
-    console.log('Task Management Application initialized successfully! 🚀');
 });
+
+// Função global chamada após login bem-sucedido
+window.onLoginSuccess = async function() {
+    const loginScreen = document.getElementById('loginScreen');
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.style.display = '';
+    if (loginScreen) loginScreen.style.display = 'none';
+    if (TaskManager && typeof TaskManager.init === 'function') {
+        await TaskManager.loadTasks();
+        TaskManager.init();
+    }
+};
 
 // Global error handler
 window.addEventListener('error', (event) => {
@@ -1412,3 +1496,94 @@ document.addEventListener('click', (e) => {
         document.querySelector('.month-calendar-grid')?.classList.remove('has-expanded');
     }
 });
+
+// Funções globais para modais de compartilhamento
+window.toggleShareModal = function(show, taskId) {
+    const modal = document.getElementById('shareTaskModal');
+    modal.style.display = show ? 'flex' : 'none';
+    if (show && taskId) {
+        document.getElementById('shareTaskId').value = taskId;
+    } else {
+        document.getElementById('shareTaskForm').reset();
+    }
+};
+window.toggleReceivedSharesModal = function(show) {
+    document.getElementById('receivedSharesModal').style.display = show ? 'flex' : 'none';
+    if (show) loadReceivedShares();
+};
+window.toggleSentSharesModal = function(show) {
+    document.getElementById('sentSharesModal').style.display = show ? 'flex' : 'none';
+    if (show) loadSentShares();
+};
+
+// Evento de envio do formulário de compartilhamento
+const shareTaskForm = document.getElementById('shareTaskForm');
+if (shareTaskForm) {
+    shareTaskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const taskId = document.getElementById('shareTaskId').value;
+        const to_email = document.getElementById('shareEmail').value;
+        try {
+            await ShareAPI.shareTask(taskId, to_email);
+            alert('Tarefa compartilhada!');
+            toggleShareModal(false);
+        } catch (err) {
+            alert('Erro ao compartilhar tarefa.');
+        }
+    });
+}
+
+// Carregar tarefas compartilhadas recebidas
+async function loadReceivedShares() {
+    const list = document.getElementById('receivedSharesList');
+    list.innerHTML = 'Carregando...';
+    try {
+        const shares = await ShareAPI.getReceivedShares();
+        if (shares.length === 0) {
+            list.innerHTML = '<p>Nenhuma tarefa compartilhada com você.</p>';
+            return;
+        }
+        list.innerHTML = shares.map(share => `
+            <div class="share-item">
+                <b>${share.title}</b> de ${share.from_user_name} (${share.from_user_email})<br>
+                Status: <span>${share.share_status}</span><br>
+                <button onclick="respondShare(${share.id}, 'aceita')" ${share.share_status !== 'pendente' ? 'disabled' : ''}>Aceitar</button>
+                <button onclick="respondShare(${share.id}, 'recusada')" ${share.share_status !== 'pendente' ? 'disabled' : ''}>Recusar</button>
+            </div>
+        `).join('');
+    } catch (err) {
+        list.innerHTML = '<p>Erro ao carregar tarefas compartilhadas.</p>';
+    }
+}
+
+// Carregar tarefas compartilhadas enviadas
+async function loadSentShares() {
+    const list = document.getElementById('sentSharesList');
+    list.innerHTML = 'Carregando...';
+    try {
+        const shares = await ShareAPI.getSentShares();
+        if (shares.length === 0) {
+            list.innerHTML = '<p>Você não compartilhou nenhuma tarefa ainda.</p>';
+            return;
+        }
+        list.innerHTML = shares.map(share => `
+            <div class="share-item">
+                <b>${share.title}</b> para ${share.to_user_name} (${share.to_user_email})<br>
+                Status: <span>${share.share_status}</span>
+            </div>
+        `).join('');
+    } catch (err) {
+        list.innerHTML = '<p>Erro ao carregar tarefas compartilhadas.</p>';
+    }
+}
+
+// Aceitar ou recusar compartilhamento
+window.respondShare = async function(shareId, response) {
+    try {
+        await ShareAPI.respondShare(shareId, response);
+        loadReceivedShares();
+        alert('Resposta enviada!');
+    } catch (err) {
+        alert('Erro ao responder compartilhamento.');
+    }
+};

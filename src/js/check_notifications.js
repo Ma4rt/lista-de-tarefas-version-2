@@ -311,8 +311,3 @@ class NotificationManager {
 
 // Create global notification manager instance
 window.notificationManager = new NotificationManager();
-
-// Export for use in other modules
-if (typeof module !== 'Undefined' && module.exports) {
-    module.exports = NotificationManager;
-}

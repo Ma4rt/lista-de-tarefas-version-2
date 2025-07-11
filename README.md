@@ -1,7 +1,28 @@
 # Lista de Tarefas - Versão 2
 
-[![Deploy to GitHub Pages](https://github.com/Ma4rt/lista-de-tarefas-vesion-2/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ma4rt/lista-de-tarefas-vesion-2/actions/workflows/deploy.yml)
-[![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-blue?style=flat-square)](https://github.com/Ma4rt/lista-de-tarefas-vesion-2.git)
+## Estrutura de Pastas (Nova)
+
+- frontend/
+  - Tela-Login/
+    - index.html
+    - styles.css
+    - script.js
+    - auth.js
+    - check_notifications.js
+    - Caderno.png
+  - (outras telas futuras...)
+- backend/
+  - auth/
+    - auth.js
+  - tasks/
+    - tasks.js
+  - db.js
+  - index.js
+  - env.env
+  - package.json
+  - README-backend.md
+
+(As instruções detalhadas de execução permanecem as mesmas, apenas as rotas e caminhos dos arquivos mudam conforme a nova organização.)
 
 ## 🌐 Demo
 Acesse a versão online: [Lista de Tarefas](https://github.com/Ma4rt/lista-de-tarefas-vesion-2.git)
